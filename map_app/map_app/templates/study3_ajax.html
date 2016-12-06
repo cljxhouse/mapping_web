@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="{{ url_for('static', filename='jquery-2.2.3.js') }}"></script>
+</head>
+<body>
+enter keyword: <input type="input" name="keyword">
+<select id="tablelist" name="tablelist" size=2>
+	<option>请输入表</option>
+</select>
+<select>
+	<option>请输入列</option>
+</select>
+
+<script type="text/javascript">
+//知识点一：利用$(function() {})配置加载后需要完成的函数
+	$(function(){
+//知识点2：利用ajax获得数据
+
+		$.get("json/getTable", function(data,status) {
+			
+//			console.log(data);
+
+		} );
+	}
+);
+
+</script>
+
+</body>
+</html>
+
+
+
+    

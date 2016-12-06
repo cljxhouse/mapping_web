@@ -1,0 +1,3 @@
+from map_web import map_app,qaruletool
+
+map_app.run(debug=True)

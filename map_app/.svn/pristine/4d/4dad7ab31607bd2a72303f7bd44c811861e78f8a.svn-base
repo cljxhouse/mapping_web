@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="jquery-2.2.3.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+	function RefreshColumns() {
+
+		$("#columns")[0].options.length = 0; 
+		$("#columns")[0].add(new Option("A1","A1"));
+		$("#columns")[0].add(new Option("B1","B1"));
+
+	}
+
+</script>
+<div style="text-align: center; border-bottom: 1px solid #aaa;border-bottom-color: rgb(170, 170, 170);">AAA</div>
+<div> Table List
+<select id="tables" onchange="RefreshColumns()">
+	<option>T1 AAA</option>
+	<option>T2 BBB</option>
+	<option>T3 CCC</option>
+</select>
+</div>
+<div> Columns
+<select id="columns" size=2 style="width: 200px">
+	<option>A1</option>
+	<option>A2</option>
+</select>
+</div>
+</body>
+</html>
+
+
+
+    

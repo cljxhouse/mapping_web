@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<body>
+<div style="Height:30px; padding: 5px; text-align: center;width: 80%; background: #bbbbbb">数据映射清单</div>
+<form action="{{  url_for('ShowMappingList') }}">
+<div  style="Height:30px; padding: 5px； width=80%; text-align: center;">
+Map List
+<input type="text" name="keyword">
+<input type="submit" value="Submit">
+</div>
+</form>
+<table class="t1" width="80%">
+<tr>
+	<th>映射名称</th><th>目标表</th><th>负责人</th><th>最后更新日期</th>
+	<th>映射状态</th>
+	<th>View</th>
+	<th>修改状态</th>
+	<th>Delete</th>
+</tr>
+{%  for entry in maplist  %}
+<tr>
+	<td>{{ entry['map_name'] }}</td>
+	<td>{{ entry['tgt_tab_name'] }}</td>
+	<td>{{ entry['user_name'] }}</td>
+	<td>{{ entry['last_save_time'] }}</td>
+	<td>{{ entry['mapping_status'] }}</td>
+	<td><a href="{{ url_for('ShowMapping', map_name=entry['map_name']) }}">detail info</a></td>
+	<td><a href="/map/update_status?map_name={{entry['map_name']}}&status={{entry['mapping_status']}}">Update Status</a></td>
+	<td><a href="{{ url_for('DeleteMapping', map_name=entry['map_name']) }}">DEL</a></td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
+{% endblock %}

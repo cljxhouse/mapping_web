@@ -1,0 +1,24 @@
+
+
+{% if model %}
+    {%  for item in model  %}
+
+    <tr>
+        <!--<td>{{item[0]['qa_id']}}</td><-->
+        <td>{{item[0]["src_sys_cd"]}}</td>
+        <td>{{item[0]['table_cname']}}</td>
+        <td>{{item[0]['table_ename']}}</td>
+        <td>{{item[0]['col_cname']}}</td>
+        <td>{{item[0]['col_ename']}}</td>
+        <td>{{item[0]['rule_type']}}</td>
+        <td>{{item[0]['rule_desc']}}</td>
+        <td>{{item[0]['sql_stmt']}}</td>
+        <td>{{item[0]['total_rows']}}</td>
+        <td>{{item[0]['total_errors']}}</td>
+        <td><input type="button" value="删除" onclick="remove_qa_rule({{item[0]['qa_id']}})">
+            <input type="button" value="复制" onclick="copy_qa_rule({{item[0]['qa_id']}})">
+            <input type="button" value="修改" onclick="edit_qa_rule({{item[0]['qa_id']}})">
+        </td>
+    </tr>
+    {% endfor %}
+{% endif %}

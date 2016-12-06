@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/map/map_source_update" method="POST">
+	<div>映射名称： <input type="text" name="map_name" value="{{ model.map_name }}" readonly="true" > <input type="submit" value="Submit" >
+    <input type="button" onclick="history.back()" value="return">
+	</div>
+	<div><input type="text" name="tab_order" value="{{ model.tab_order }}" hidden="true"></div>
+	<div>关联条件：<textarea name="join_condition" style="width: 300px;height: 100px">{{model.join_condition}}</textarea></div>
+	<div>关联说明：<textarea name="join_condition_desc" style="width: 300px;height: 100px">{{model.join_condition_desc}}</textarea> </div>
+	<div>过滤条件：<textarea name="filter_condition" style="width: 300px;height: 100px">{{model.join_condition_desc}}</textarea> </div>
+	<div>过滤说明：<textarea name="filter_condition_desc" style="width: 300px;height: 100px">{{model.join_condition_desc}}</textarea> </div>
+	<div>备注说明：<textarea name="comments" style="width: 300px;height: 100px">{{model.comments}}</textarea> </div>
+</form>
+</body>
+</html>

@@ -1,0 +1,41 @@
+table.t1 {
+border:1px solid ;
+border-collapse: collapse;
+font-size:10px;
+}
+
+div.top {
+    border-bottom: 1px solid #aaa;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(170, 170, 170);
+}
+
+
+ .t1 td {
+   border:1px solid ;
+   align: center;
+   padding: 2px;
+   }
+
+ .t1 th{
+   border:1px solid ;
+   background-color:
+   color: #0066cc;
+background-color: #eef6fe;
+   }
+
+   div.info {
+     background-color:Grey;
+
+   }
+
+   .t1 tr.noneed {
+      background-color: rgb(200,200,200);
+   }
+   .t1 tr.fail {
+      background-color: rgb(200,100,100);
+   }
+   .t1 tr:hover {
+   background-color:#888800;
+   }
