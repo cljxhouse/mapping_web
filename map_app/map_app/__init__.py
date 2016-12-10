@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, redirect, session, g, abort
 from flask import request, url_for, render_template
-from psycopg2 import connect
 import sys,sqlite3
 
 
@@ -23,6 +22,7 @@ def getDB():
 import mappingtool
 import qaruletool
 import dataapi
+import repo
 #import qa_rule_mgnt
 
 
