@@ -296,7 +296,8 @@ def sync_source_list():
     cur.execute(sql_str)
     data = []
     data_rows=cur.fetchall()
-
+    return_str=''
+    line_str=''
     for single_row in data_rows:
         #print single_row['map_name']
         data.append({'SRC_NAME':base64.b64encode(single_row['repo_id']),
@@ -306,14 +307,19 @@ def sync_source_list():
                      'COLUMN_NAME': base64.b64encode(single_row['col_name']),
                      'DATA_TYPE': base64.b64encode(single_row['dtype']),
                      'IS_PRIMARY':base64.b64encode(single_row['isprimary'])})
-    print json.dumps(data, ensure_ascii=False)
+        line_str=base64.b64encode(single_row['repo_id'])+'@'+base64.b64encode(single_row['tab_ch_name'])+'@'+base64.b64encode(single_row['tab_name'])+'@'+ base64.b64encode(single_row['col_ch_name'])+'@'+ base64.b64encode(single_row['col_name'])+'@'+ base64.b64encode(single_row['dtype'])+'@'+ base64.b64encode(single_row['isprimary'])
+        if return_str=='':
+            return_str = line_str
+        else:
+            return_str=return_str+"#"+line_str
+    #print data
+    #print json.dumps(data, ensure_ascii=False)
     #data1 = []
     #data1.append({'data':data})
-    return json.dumps(data, ensure_ascii=False)
+    #return json.dumps(data, ensure_ascii=False)
+    return return_str
 
 @myapp.route('/data/mapcreate', methods=['GET', 'POST'])
-
-
 def create_map():
     #王超完成此函数
     #传递数据是json格式,包括映射名称,目标表,用户,时间,状态=new
