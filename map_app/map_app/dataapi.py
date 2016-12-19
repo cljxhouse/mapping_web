@@ -291,7 +291,7 @@ def sync_source_list():
               "ifnull(col_ch_name,'') as col_ch_name, " \
               "ifnull(col_name,'') as col_name," \
               "ifnull(dtype,'') as dtype ," \
-              "ifnull(isprimary,'') as isprimary from t_column /*where tab_name = 'FF_IBOUT'*/"
+              "ifnull(isprimary,'') as isprimary from t_column order by repo_id, tab_name/*where tab_name = 'FF_IBOUT'*/"
     print sql_str
     cur.execute(sql_str)
     data = []
