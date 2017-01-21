@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<form action="{{  url_for('SaveRepoRow') }}">
+	<div>表名： <input type="text" name="tab_name" value="{{ column_info.tab_name }}" ></div>
+	<div>表中文名： <input type="text" name="tab_ch_name" value="{{ column_info.tab_ch_name }}" ></div>
+	<div>序号：<input type="text" name="col_position" value="{{ column_info.col_position }}"></div>
+	<div><input type="text" name="column_id" value="{{ column_info.column_id }}" hidden="true"></div>
+	<div>字段名称： <input type="text" name="col_name" value="{{ column_info.col_name }}"></div>
+	<div>字段中文名称：<input type="text" name="col_ch_name" value="{{ column_info.col_ch_name }}"></div>
+	<div>字段类型：<input type="text" name="dtype" value="{{ column_info.dtype }}"></input></div>
+	<div>字段说明：<textarea name="col_desc" style="width: 300px;height: 100px">{{column_info.col_desc}}</textarea> </div>
+	<div>是否主键：<select name="isprimary">
+		<option {% if column_info.isprimary =="Y"%} selected = "selected"  {% endif %} value="是">是</option>
+		<option {% if column_info.isprimary !="Y"%} selected = "selected"  {% endif %} value="否">否</option>
+	</select>  </div>
+	<div>是否必须：<select name="is_nessary">
+		<option {% if column_info.is_nessary =="Y"%} selected = "selected"  {% endif %} value="是">是</option>
+		<option {% if column_info.is_nessary !="Y"%} selected = "selected"  {% endif %} value="否">否</option>
+	</select>  </div>
+	<input type="submit" value="Submit" >
+    <input type="button" onclick="history.back()" value="return">	
+</form>
+</body>
+</html>
+{% endblock %}
