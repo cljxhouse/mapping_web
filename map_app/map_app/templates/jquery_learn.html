@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery-2.2.3.js" type="text/javascript"></script>
+</head>
+<body>
+   <script>
+       //第一个例子,onload 写在 $(); 圆括号里面
+       $( function hello_world() {
+        //  alert("hello World!");
+       //第二个例子,通过id选择,调用html改变<span>内部的元素.
+          $("#msg").html("Changed me");
+       }
+       );
+
+
+   </script>
+ <span id="msg">Hello World</span>
+
+</body>
+</html>

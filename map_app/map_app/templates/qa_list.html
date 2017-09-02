@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block body %}
+<body>
+<form name="add_qa" action="/qa/rule_management" method="post" id="qa_management">
+    <input type="text" name="qa_id" value="" hidden="hidden">
+    <input type="text" name="qa_operation_cd" value="{{model['action']}}" hidden="hidden">
+<table>
+    <tr>
+        <td>映射名称:</td>
+        <td><input type="text" name="map_name" value="{{model['map_name']}}" readonly="readonly"></td>
+        <td>输入系统代码:</td>
+        <td><input type="text" name="src_sys_cd" value="{{model['src_sys_name']}}"></td>
+    </tr>
+    <tr>
+        <td>输入表中文名称:</td>
+        <td><input type="text" name="table_cname" value="{{model['src_tab_name']}}"></td>
+        <td>输入表英文名称:</td>
+        <td><input type="text" name="table_ename" value="{{model['src_tab_cname']}}"></td>
+    </tr>
+    <tr>
+        <td>输入字段中文名称:</td>
+        <td><input type="text" name="col_cname" value="{{model['src_field_cname']}}"> </td>
+        <td>输入字段英文名称:</td>
+        <td><input type="text" name="col_ename" value="{{model['src_field_name']}}"></td>
+    </tr>
+    <tr>
+        <td>输入检查类型：</td>
+        <td><select name="qa_type_cd">
+    <option>空值检查</option>
+    <option>唯一性检查</option>
+    <option>外键检查</option>
+    <option>值域检查</option>
+    <option>业务规则检查</option>
+    <option>期限检查</option>
+</select></td>
+        <td>输入质量检查规则</td>
+        <td><input type="text" name="rule_desc"></td>
+    </tr>
+    <tr>
+        <td>输入质量检查SQL代码</td>
+        <td><textarea name="sql_stmt"></textarea>
+    </tr>
+     <tr>
+        <td>检查记录总数</td>
+        <td><input type="text" name="total_rows">
+        <td>问题记录数</td>
+        <td><input type="text" name="total_errors">
+    </tr>
+    <tr>
+       <td></td>
+        <td></td>
+        <td></td>
+        <td><input type="button" value="增加" onclick="add_qa_rule()"></td>
+
+    </tr>
+</table>
+</form>
+<table class="t1" style="width:80%">
+<tr>
+    <th>源系统</th>
+    <th>中文表</th>
+    <th>中文字段</th>
+    <th>英文表</th>
+    <th>英文字段</th>
+    <th>规则类型</th>
+    <th>规则描述</th>
+    <th>SQL代码</th>
+    <th>总记录数</th>
+    <th>错误记录数</th>
+    <th>Action</th>
+</tr>
+<tbody id="qarulelist">
+
+</tbody>
+
+</table>
+<script>
+    $(function() {
+       //alert("me");
+       $("#qarulelist").load("/qa/getQATable");
+    })
+
+    function remove_qa_rule(rule_id) {
+	    $.get("/qa/remove",{id:rule_id});
+	    $("#qarulelist").load("/qa/getQATable");
+	}
+
+	function edit_qa_rule(rule_id) {
+
+	}
+
+	function add_qa_rule() {
+	    var form_data=getFormJson($("#qa_management")[0]);
+	    console.log(form_data);
+	    ajaxSubmit($("#qa_management")[0],{});
+	    $("#qarulelist").load("/qa/getQATable");
+
+	}
+
+</script>
+</body>
+</html>
+{% endblock %}

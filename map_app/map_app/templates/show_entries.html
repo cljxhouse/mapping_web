@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block body %}
+<div > 映射名称： {{ map_name }}
+    <a href="{{ url_for('DeleteMapping', map_name=map_name) }}">Delete</a>
+    <input type="button" value="Back" onclick="history.back()" style="float:right">
+</div>
+<div id="tab_map_info" class="info" >
+ <h3>映射关联关系信息</h3>
+</div>
+<div id="tab_map_content"></div>
+<table class="t1" width="100%">
+<th>源系统</th><th>源表</th><th>关联关系</th><th>关联关系说明</th>
+<th>过滤条件</th>
+  <th>过滤条件说明</th>
+  <th>备注</th>
+  <th>编辑</th>
+{%  for entry in tab_info %}
+<tr>
+ <td>{{ entry['src_sys_name'].decode('utf-8') }}</td>
+ <td>{{ entry['src_tab_name'].decode('utf-8') }}</td>
+ <td><div style="width: 300px">{{ entry['join_condition'].decode('utf-8') }}</div></td>
+  <td><div style="width: 150px">{{ entry['join_condition_desc'].decode('utf-8') }}</div></td>
+  <td><div style="width: 200px">{{ entry['filter_condition'].decode('utf-8') }}</div></td>
+  <td><div style="width: 200px">{{ entry['filter_condition_desc'].decode('utf-8') }}</div></td>
+  <td>{{ entry['comments'].decode('utf-8') }}</td>
+  <td><a href="/map/editsource?map_name={{ map_name }}&tab_order={{ entry['tab_order']}}">Edit</a></td>
+ </tr>
+  {% endfor %}
+ 
+ </table>
+</div>
+<div id="col_map_info" class="info"><h3>字段映射信息</h3></div>
+<div id="col_map_content">
+<table class="t1" width="100%">
+  <tr>
+<th>目标字段</th><th>目标字段英文</th>
+  <th>源系统</th><th>源系统表</th><th>源系统表英文</th>
+  <th>源表字段</th><th>源表字段英文</th>
+  <th>映射规则</th><th>规则说明</th>
+  <th>映射状态</th>
+  <th>></th>
+    </tr>
+{%  for entry in col_info %}
+<tr {% if entry['map_status'].decode('utf-8') is equalto '无需映射' %} class="noneed" 
+    {% elif entry['map_status'].decode('utf-8') is equalto '无法映射' %} class="fail" 
+{% endif %}>
+ <td>{{ entry['tgt_field_name'].decode('utf-8') }}</td>
+ <td>{{ entry['tgt_field_cname'].decode('utf-8') }}</td>
+ <td>{{ entry['src_sys_name'].decode('utf-8') }}</td>
+  <td>{{ entry['src_tab_name'].decode('utf-8') }}</td>
+  <td>{{ entry['src_tab_cname'].decode('utf-8') }}</td>
+  <td>{{ entry['src_field_name'].decode('utf-8') }}</td>
+  <td>{{ entry['src_field_cname'].decode('utf-8') }}</td>
+  <td><div style="width:180px">{{ entry['map_rule'].decode('utf-8') }}</div></td>
+  <td><div style="width:180px">{{ entry['map_rule_desc'].decode('utf-8') }}</div></td>
+  <td><div style="width:40px">{{ entry['map_status'].decode('utf-8') }}</div></td>
+  <td><a href="/map/update_rule?map_name={{ map_name }}&col_order={{ entry['col_order']}}">edit</a></td>
+ </tr>
+  {% endfor %}
+
+ </table>
+ </div>
+ <div class="info"><h3>Generated SQL</h3></div>
+ <div style="padding-top: 10px"><textarea style="width: 800px;height: 400px">{{ map_sql }}</textarea></div>
+{% endblock %}

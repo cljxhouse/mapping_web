@@ -1,0 +1,257 @@
+# -*- coding: utf-8 -*-
+
+from flask import request,render_template,redirect,url_for,abort
+from map_web import map_app,getDB
+
+@map_app.route('/',methods=['GET', 'POST'] )
+def main_entry():
+    return redirect("/map/view")
+
+
+@map_app.route('/map/show', methods=['GET', 'POST'])
+def ShowMapping():
+    conn = getDB()
+    cur = conn.cursor()
+    map_name = request.args.get('map_name', '')
+    s1 = ''
+    if map_name != "":
+        s1 = "Where upper(t.map_name) like upper('" + map_name + "')"
+    sql_str = '''
+      SELECT t.src_sys_name,
+       t.src_tab_name,
+       ifnull(t.join_condition,''),
+       ifnull(t.join_condition_desc,''),
+       ifnull(t.filter_condition,''),
+       ifnull(t.filter_condition_desc,''),
+       ifnull(t.comments,''),
+       t.tab_order
+  FROM t_src_table t  ''' + s1 + " order by t.tab_order"
+    # print sql_str
+
+    cur.execute(sql_str)
+    tab_row = cur.fetchall()
+    # cur.close()
+    tab_info = []
+    isstart = True
+    map_sql = ""
+    where_sql = ""
+    for r in tab_row:
+        tab_info.append({'src_sys_name': r[0]
+                            , 'src_tab_name': r[1]
+                            , 'join_condition': r[2]
+                            , 'join_condition_desc': r[3]
+                            , 'filter_condition': r[4]
+                            , 'filter_condition_desc': r[5]
+                            , 'comments': r[6]
+                            , 'tab_order': r[7]
+                         })
+        # This part try to generate SQL statement of the FROM part
+        if isstart:
+            map_sql = "FROM " + r[1]
+            isstart = False
+            where_sql = "WHERE "+r[4]
+        else:
+            flag1 = r[2].upper().find("LEFT")
+            flag2 = r[2].upper().find("ON")
+
+            if (flag1 != -1):  # if statement has LEFT JOIN key word
+                map_sql += "\r\n LEFT JOIN " + r[1] + "  " + r[2][flag2:]
+            elif (flag2 != -1):
+                map_sql += "\r\n JOIN " + r[1] + "  " + r[2][flag2:]
+            else:
+                map_sql += "\r\n JOIN " + r[1] + "  ON " + r[2]
+
+    sql_str = '''
+          SELECT t.tgt_field_name,
+       t.tgt_field_cname,
+       t.src_sys_name,
+       t.src_tab_name,
+       t.src_tab_cname,
+       t.src_field_cname,
+       t.src_field_name,
+       t.map_rule,
+       t.map_rule_desc,
+       t.map_status,
+       t.col_order
+  FROM t_col_map t
+        ''' + s1 + ' order by t.col_order'
+    # print sql_str
+    cur.execute(sql_str)
+    col_info = []
+    col_row = cur.fetchall()
+    cur.close()
+    isstart = True
+    sql_body = ""
+
+    for r in col_row:
+        col_info.append({
+            'tgt_field_name': r[0]
+            , 'tgt_field_cname': r[1]
+            , 'src_sys_name': r[2]
+            , 'src_tab_name': r[3]
+            , 'src_tab_cname': r[4]
+            , 'src_field_cname': r[5]
+            , 'src_field_name': r[6]
+            , 'map_rule': r[7]
+            , 'map_rule_desc': r[8]
+            , 'map_status': r[9]
+            , 'col_order': r[10]
+        })
+
+        tmp1 = r[7]
+        if r[7].strip() == "":
+            tmp1 = r[6].strip()
+
+        if tmp1.strip() == "":
+            tmp1 = "''"
+        tmp1 = tmp1.lower().replace('send', '')
+
+        if isstart:
+            isstart = False
+            sql_body = "SELECT " + tmp1 + "     /***" + r[1] +"***/"
+        else:
+            sql_body += "\r\n," + tmp1+ "     /***" + r[1] +"***/"
+
+    map_sql = sql_body + "\r\n" + map_sql + "\r\n" + where_sql
+
+    return render_template('show_entries.html', tab_info=tab_info, col_info=col_info, map_name=map_name,
+                           map_sql=map_sql)
+
+
+
+@map_app.route('/map/view', methods=['GET', 'POST'])
+def ShowMappingList():
+    conn = getDB()
+    cur = conn.cursor()
+    filter = request.args.get('keyword', '')
+    s1 = ''
+    if filter != "":
+        s1 = "Where upper(t.map_name) like '%" + filter.upper() + "%'"
+    sql_str = '''
+      select t.map_name,t.tgt_tab_name,t.user_name,t.last_save_time,t.mapping_status
+    from t_tab_map t
+        ''' + s1 + ' order by t.tgt_tab_name, t.map_name'
+    cur.execute(sql_str)
+    maplist = []
+    allmaps = cur.fetchall()
+    cur.close()
+    # print cur.description
+    for onerow in allmaps:
+        dic = {}
+        dic['map_name'] = onerow[0]
+        dic['tgt_tab_name'] = onerow[1]
+        dic['user_name'] = onerow[2]
+        dic['last_save_time'] = onerow[3]
+        dic['mapping_status'] = onerow[4]
+        maplist.append(dic)
+    return render_template('list_maps.html', maplist=maplist)
+
+
+# 删除映射
+@map_app.route('/map/delete', methods=['GET', 'POST'])
+def DeleteMapping():
+    map_name = request.args.get('map_name', '')
+    if map_name != "":
+        with getDB() as conn:
+            with conn.cursor() as curr:
+                curr.execute("delete from t_col_map where map_name ='" + map_name + "'");
+                curr.execute("delete from t_src_table where map_name ='" + map_name + "'");
+                curr.execute("delete from t_tab_map where map_name ='" + map_name + "'");
+    return redirect('/')
+
+@map_app.route('/map/update_status', methods=['GET', 'POST'])
+def UpdateMappingStatusView():
+    p_map_name = request.args.get('map_name', '')
+    p_status = request.args.get('status', '')
+    return render_template("map_update_status.html",map_name=p_map_name,status=p_status)
+
+@map_app.route('/map/update_status_action', methods=['GET', 'POST'])
+def UpdateMappingStatusAction():
+    p_map_name = request.form['map_name']
+    p_status = request.form['status']
+    conn = getDB()
+    curr = conn.cursor()
+    try :
+        curr.execute("update t_tab_map set mapping_status=%s where map_name=%s",(p_status,p_map_name))
+        conn.commit()
+    finally:
+        return redirect("/map/view")
+
+
+
+# 修改映射规则
+@map_app.route('/map/update_rule', methods=['GET', 'POST'])
+def UpdateMapRuleForm():
+    map_name = request.args.get('map_name', '')
+    col_order = request.args.get('col_order', '')
+    if map_name == '' or col_order == '':
+        return abort(401)
+    else:
+        conn = getDB()
+        curr = conn.cursor()
+        curr.execute(
+                    "select map_rule, map_rule_desc,map_status from t_col_map where map_name='%s' and col_order=%s" % (
+                    map_name, col_order))
+        r = curr.fetchone()
+        ruledata = {'map_name': map_name
+            , 'col_order': col_order
+            , 'map_rule': r[0]
+            , 'map_rule_desc': r[1]
+            ,'map_status':r[2]}
+        return render_template('map_rule_update.html', ruledata=ruledata)
+
+
+@map_app.route('/map/update_action', methods=['GET', 'POST'])
+def UpdateMapRule():
+    map_name = request.form['map_name']
+    col_order = request.form['col_order']
+    map_rule = request.form['map_rule']
+    map_rule_desc = request.form['map_rule_desc']
+    map_status = request.form['map_status']
+
+    conn = getDB()
+    curr = conn.cursor()
+    curr.execute('''update t_col_map set map_rule = ?, map_rule_desc=?,map_status=?
+                         where map_name=? and col_order=? ''', [map_rule, map_rule_desc,map_status, map_name, col_order]
+                         )
+    return redirect(url_for("ShowMapping", map_name=map_name))
+
+
+@map_app.route('/map/editsource', methods=['GET', 'POST'])
+def MapEditSourcePage():
+    map_name = request.args.get('map_name', '')
+    tab_order = request.args.get('tab_order', '')
+
+    with getDB() as conn:
+        with conn.cursor() as curr:
+            curr.execute('''select join_condition,join_condition_desc,filter_condition, filter_condition_desc,
+                            comments from t_src_table where map_name='%s' and tab_order=%s ''' % (
+            map_name, tab_order))
+            r = curr.fetchone()
+            model = {'map_name': map_name
+                , 'tab_order': tab_order
+                , 'join_condition': r[0]
+                , 'join_condition_desc': r[1]
+                , 'filter_condition': r[2]
+                , 'filter_condition_desc': r[3]
+                , 'comments': r[4]}
+    return render_template('map_source_update.html', model=model)
+
+
+@map_app.route('/map/map_source_update', methods=['GET', 'POST'])
+def MapSourceUpdate():
+    map_name = request.form['map_name']
+    tab_order = request.form['tab_order']
+    j1 = request.form['join_condition']
+    j2 = request.form['join_condition_desc']
+    f1 = request.form['filter_condition']
+    f2 = request.form['filter_condition_desc']
+    c1 = request.form['comments']
+
+    with getDB() as conn:
+        with conn.cursor() as curr:
+            curr.execute('''update t_src_table set join_condition = %s, join_condition_desc=%s,
+                          filter_condition=%s, filter_condition_desc=%s, comments=%s
+                         where map_name=%s and tab_order=%s ''', [j1, j2, f1, f2,c1,map_name, tab_order]
+                         )
+    return redirect(url_for("ShowMapping", map_name=map_name))

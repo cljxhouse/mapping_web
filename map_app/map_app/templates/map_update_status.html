@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/map/update_status_action" method="post">
+<div>映射名称:<input name="map_name" value="{{ map_name}}" type="text" readonly="readonly"></div>
+
+    <div>映射状态:<!--<input name="status" value="{{status}}" type="text"><-->
+    <select name="status" style="width:200px">
+        <option {% if status is equalto '新增'%} selected = "selected"  {% endif %}>新增 </option>
+        <option {% if status is equalto '检出'%} selected = "selected"  {% endif %}>检出</option>
+        <option {% if status is equalto '问题'%} selected = "selected"  {% endif %}>问题</option>
+        <option {% if status is equalto '审核通过'%} selected = "selected"  {% endif %}>审核通过</option>
+    </select>
+
+    </div>
+    <div><input type="submit" value="修改">
+    <input type="button" onclick="history.back()" value="Back">
+    </div>
+</form>
+</body>
+</html>

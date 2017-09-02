@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block body %}
+<body>
+<form action="/qa/list">
+    <input type="submit" value="查找">
+</form>
+<form name="add_qa" action="/qa/add_rule" method=post>
+<table>
+    <tr>
+        <td>输入系统代码:</td>
+        <td><input type="text" name="table_name"></td>
+    </tr>
+    <tr>
+        <td>输入表中文名称:</td>
+        <td><input type="text" name="table_name"></td>
+        <td>输入表英文名称:</td>
+        <td><input type="text" name="table_name"></td>
+    </tr>
+    <tr>
+        <td>输入字段中文名称:</td>
+        <td><input type="text" name="column_name"></td>
+        <td>输入字段英文名称:</td>
+        <td><input type="text" name="table_name"></td>
+    </tr>
+    <tr>
+        <td>输入检查类型：</td>
+        <td><select name="qa_type">
+    <option>空值检查</option>
+    <option>唯一性检查</option>
+    <option>外键检查</option>
+    <option>值域检查</option>
+    <option>业务规则检查</option>
+    <option>期限检查</option>
+</select></td>
+        <td>输入质量检查规则</td>
+        <td><input type="text" name="qa_rule_desc"></td>
+    </tr>
+    <tr>
+        <td>输入质量检查SQL代码</td>
+        <td><textarea name="sql_stmt"></textarea>
+    </tr>
+     <tr>
+        <td>检查记录总数</td>
+        <td><input type="text" name="total_rows">
+        <td>问题记录数</td>
+        <td><input type="text" name="total_errors">
+    </tr>
+    <tr>
+        <td><input type="submit" value="增加"></td>
+        <td></td>
+    </tr>
+</table>
+</form>
+<table class="t1" style="width:80%">
+<tr>
+    <th style="width:200px">中文表名</th>
+    <th style="width:200px">中文字段</th>
+    <th style="width:200px">检查类型</th>
+    <th style="width:200px">规则描述</th>
+</tr>
+
+{% if model %}
+    {%  for item in model  %}
+    <tr>
+        <td>{{item[1]}}</td>
+        <td>{{item[2]}}</td>
+        <td>{{item[3]}}</td>
+        <td>{{item[4]}}</td>
+        <td><input type="button" value="删除" onclick="remove_qa_rule({{item[0]}})"></td>
+    </tr>
+    {% endfor %}
+{% endif %}
+
+</table>
+
+</body>
+</html>
+{% endblock %}

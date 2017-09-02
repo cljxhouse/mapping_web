@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block body %}
+<body>
+<script>
+function DeleteTargetColumn(name, position)
+{
+var fm=document.forms['FormDelete'];
+document.getElementById("id_column_name").value=name;
+document.getElementById("id_position").value=position;
+//alert("Hello World!" + name+ " "+position);
+fm.submit();
+}
+</script>
+<form action="/repo/list">
+<select name="target_table" style="width:200px">
+    {%  for item in model['tables']  %}
+    <option{% if item[0] is equalto selected_table   %} selected = "selected"  {% endif %}>{{ item[0] }}</option>
+    {% endfor %}
+</select>
+    <input type="submit" value="查找">
+</form>
+<form name="FormDelete" action="/repo/DeleteRow" method="post" hidden="hidden">
+    <input name="target_table" value="{{selected_table}}" id="id_target_table">
+    <input name="column_name" value="" id="id_column_name">
+    <input name="position" value="" id="id_position">
+</form>
+<table class="t1" style="width:80%">
+<tr>
+    <th style="width:200px">中文字段</th>
+    <th style="width:200px">英文字段</th>
+    <th style="width:20px">序号</th>
+    <th style="width:200px">备注</th>
+    <th style="width:20px">A1</th>
+    <th style="width:20px">A2</th>
+</tr>
+{% if model['rows'] %}
+    {%  for item in model['rows']  %}
+    <tr>
+        <td>{{item[1]}}</td>
+        <td>{{item[0]}}</td>
+        <td>{{item[3]}}</td>
+        <td>{{item[2]}}</td>
+        <td><input type="button" value="remove" onclick="DeleteTargetColumn('{{item[0]}}','{{item[3]}}')"></td>
+        <td><input type="button" value="Update" onclick="myFunction(1')"> </a></td>
+    </tr>
+    {% endfor %}
+{% endif %}
+</table>
+
+</body>
+</html>
+{% endblock %}

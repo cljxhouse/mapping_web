@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    function myFunction1(index) {
+       
+       var fm=document.forms['form2'];
+      //alert(document.forms['form1'].name);
+      console.log(fm);
+
+      document.getElementById("I2").value="TEST";
+      fm.submit();
+    }
+</script>
+<body>
+<form name="form1">
+    <input type="text" name="I1" value="I1" id="input1"/>
+    <input type="text" name="input2" value="" id="input2"/>
+    <input type="button" value="Button1" onclick="myFunction1(1)"/>
+</form>
+<form name="form2" action="/ask" method="post" hidden="hidden">
+    <input type="text" name="I2" value="I2" id="I2">
+
+</form>
+</body>
+</html>

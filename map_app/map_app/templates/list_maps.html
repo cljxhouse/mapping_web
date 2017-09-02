@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block body %}
+
+<style type="text/css">  
+    #content {  
+        width: 80%;  
+        height: 200px;  
+    }  
+      
+    #tab_bar {  
+        width: 100%;  
+        height: 20px;  
+        float: left;  
+    }  
+    #tab_bar ul {  
+        padding: 0px;  
+        margin: 0px;  
+        height: 20px;  
+        text-align: center;  
+    }  
+      
+    #tab_bar li {  
+        list-style-type: none;  
+        float: left;  
+        width: 133.3px;  
+        height: 20px;  
+        background-color: gray;  
+    }  
+      
+    .tab_css {  
+        width: 100%;  
+        height: 200px;  
+        
+        display: none;  
+        float: left;  
+    }  
+      
+</style>  
+<script type="text/javascript">  
+    var myclick = function(v) {  
+        var llis = document.getElementsByTagName("li");  
+        for(var i = 0; i < llis.length; i++) {  
+            var lli = llis[i];  
+            if(lli == document.getElementById("tab" + v)) {  
+                lli.style.backgroundColor = "orange";  
+            } else {  
+                lli.style.backgroundColor = "gray";  
+            }  
+        }  
+
+        var divs = document.getElementsByClassName("tab_css");  
+        for(var i = 0; i < divs.length; i++) {  
+
+            var divv = divs[i];  
+
+            if(divv == document.getElementById("tab" + v + "_content")) {  
+                divv.style.display = "block";  
+            } else {  
+                divv.style.display = "none";  
+            }  
+        }  
+
+    }  
+	window.onload=function(){ 
+	var userName="xiaoming"; 
+	var b = '{{ tag }}'
+	if (b == "mapping" ) {
+		myclick(1);
+		}
+		else if (b == "table"){
+		myclick(2)
+		}
+	}
+
+</script> 
+</script> 
+<body>
+    <div id="content">  
+        <div id="tab_bar">  
+            <ul>  
+                <li id="tab1" onclick="myclick(1)" style="background-color: orange">  
+                    映射管理  
+                </li>  
+                <li id="tab2" onclick="myclick(2)">  
+                    目标表管理  
+                </li>  
+                <li id="tab3" onclick="myclick(3)">  
+                    数据质量管理  
+                </li>  
+            </ul>  
+        </div>  
+        <div class="tab_css" id="tab1_content" style="display: block">  
+<form action="{{  url_for('ShowMappingList') }}">
+<div  style="Height:30px; padding: 5px； width=80%; text-align: center;">
+Map List
+<input type="text" name="keyword">
+<input name="tag" type="hidden" value="mapping">
+<input type="submit" value="Submit">
+</div>
+</form>
+<table class="t1" width="80%">
+<tr>
+	<th>映射名称</th><th>目标表</th><th>负责人</th><th>最后更新日期</th>
+	<th>映射状态</th>
+	<th>操作</th>
+</tr>
+{%  for entry in maplist  %}
+<tr>
+	<td>{{ entry['map_name'] }}</td>
+	<td>{{ entry['tgt_tab_name'] }}</td>
+	<td>{{ entry['user_name'] }}</td>
+	<td>{{ entry['last_save_time'] }}</td>
+	<td>{{ entry['mapping_status'] }}</td>
+	<td align="center">
+	    <a href="{{ url_for('ShowMapping', map_name=entry['map_name']) }}">查看</a>&nbsp&nbsp
+	    <a href="{{ url_for('DeleteMapping', map_name=entry['map_name']) }}">删除</a>&nbsp&nbsp
+	    <a href="/map/update_status?map_name={{entry['map_name']}}&status={{entry['mapping_status']}}">更新</a>&nbsp&nbsp
+		<a href=""> 同步</a>&nbsp&nbsp
+		<a href="">发布</a>&nbsp&nbsp
+	</td>
+</tr>
+{% endfor %}
+</table>			
+        </div>  
+        <div class="tab_css" id="tab2_content">  
+            <div>目标表管理</div>  
+
+<!--             目标表管理 begin                                    -->
+<script>
+function DeleteTargetColumn(name, position)
+{
+var fm=document.forms['FormDelete'];
+document.getElementById("id_column_name").value=name;
+document.getElementById("id_position").value=position;
+//alert("Hello World!" + name+ " "+position);
+fm.submit();
+}
+</script>
+<form action="{{  url_for('ShowMappingList') }}">
+	<select name="target_table" style="width:200px">
+		{%  for item in tables  %}
+		<option value="{{ item['tab_name'] }}" {% if item['tab_name']  ==  tab_name    %} selected = "selected"  {% endif %}>{{ item['tab_name'] }}</option>
+		{% endfor %}
+	</select>
+    <input type="submit" value="查找">
+	<input name="tag" type="hidden" value="table">	
+</form>
+<form name="FormDelete" action="/repo/DeleteRow" method="post" hidden="hidden">
+    <input name="target_table" value="{{selected_table}}" id="id_target_table">
+    <input name="column_name" value="" id="id_column_name">
+    <input name="position" value="" id="id_position">
+</form>
+<table class="t1" style="width:80%">
+<tr>
+	<th style="width:20px">序号</th>
+    <th style="width:200px">中文字段</th>
+    <th style="width:200px">英文字段</th>
+	<th style="width:20px">类型</th>
+    <th style="width:20px">是否主键</th>
+    <th style="width:200px">备注</th>
+	<th>操作</th>
+
+</tr>
+
+{% if col_list %}
+    {%  for item in col_list  %}
+    <tr>
+        <td>{{item['col_position']}}</td>
+        <td>{{item['col_cn_name']}}</td>
+        <td>{{item['col_name']}}</td>
+		<td>{{item['dtype']}}</td>
+        <td>{{item['isprimary']}}</td>
+		<td>{{item['col_desc']}}</td>
+        <td align="center">
+			<a href="{{ url_for('DeleteRepoRow', tab_name=tab_name,col_name=item['col_name'],column_id=item['column_id'])  }}">删除</a>&nbsp&nbsp
+			<a href="{{ url_for('RepoEditRepoColumnPage', tab_ch_name=item['tab_ch_name'],tab_name=tab_name,column_id=item['column_id']) }}">修改</a>&nbsp&nbsp
+			<a href="{{ url_for('RepoEditRepoColumnPage', tab_ch_name=item['tab_ch_name'],tab_name=tab_name,column_id="") }}">插入一行</a>&nbsp&nbsp
+		</td>
+    </tr>
+    {% endfor %}
+{% endif %}
+
+</table>
+
+<!--             目标表管理  end                                     -->
+
+			
+        <div class="tab_css" id="tab3_content">  
+            <div>数据质量管理</div>  
+        </div>  
+    </div>  
+
+
+</body>
+</html>
+{% endblock %}
