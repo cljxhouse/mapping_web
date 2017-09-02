@@ -2,6 +2,7 @@
 
 import pandas as pd
 import numpy as np
+import os
 from sklearn import preprocessing
 
 
@@ -19,7 +20,8 @@ class DataQuality :
         #print self.cols
         pass
 
-    def Analyze(self, output=""):
+    #分析空值，0值，极大、极小，中值，均值等指标
+    def dq_Analyze(self, output=""):
         #获得连续变量的统计值
         st1 = self.df_data.describe()
         st1 = pd.concat([st1.T,self.cols],axis=1)
@@ -34,6 +36,24 @@ class DataQuality :
         else:
             print st1
         return st1
+
+    #离散值分析每个值的分布
+    def dq_Frequency(self,X,output):
+        if isinstance(X,str):
+            df1 = self.df_data[X].value_counts(ascending=False)
+            df1["field_name"] = X
+            df1.iloc[0:100].to_csv(output)
+        elif isinstance(X,list):
+            os.remove(output)
+            for col_name in X:
+                df1 = self.df_data[col_name].value_counts(ascending=False)[0:100]
+                df1["field_name"]=col_name
+                df1.to_csv(output,mode="a")
+                #print type(df1)
+        else:
+            print "Error X entered"
+        pass
+
 
     #本函数处理极大极小值变换
     def T_min_max(self,X):
@@ -77,13 +97,22 @@ class DataQuality :
     def T_percentile(self,X):
         pass
 
-    def Frequency(self,X):
+    #根据频数转换连续值到离散值
+    def bin_by_frequency(self,X):
         pass
 
+    # 根据距离转换连续值到离散值
+    def bin_by_distance(self,X):
+        pass
+
+    #转换离散代码成数值
     def T_WOE(self,X, Y):
         pass
 
     def AR(self,X,Y):
+        pass
+
+    def IV(self,X,Y):
         pass
 
     def compute_ks(self,X,Y):
@@ -97,4 +126,5 @@ class DataQuality :
 
 dq = DataQuality()
 dq.load_file("LoanStats_clean.csv")
-df1=dq.Analyze("test1.csv")
+dq.dq_Analyze("test1.csv")
+#dq.dq_Frequency(["grade","loan_amnt"],"test2.csv")
