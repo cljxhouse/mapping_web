@@ -64,6 +64,7 @@ class DataQuality :
         r[r < edge_low] = edge_low
         return r
 
+    #采用第一种方法进行logistic变换
     def T_logistic1(self,X):
         pass
 
