@@ -2,6 +2,8 @@
 
 import pandas as pd
 import numpy as np
+from sklearn import preprocessing
+
 
 class DataQuality :
 
@@ -33,6 +35,64 @@ class DataQuality :
             print st1
         return st1
 
+    #本函数处理极大极小值变换
+    def T_min_max(self,X):
+        min_max_scaler = preprocessing.MinMaxScaler()
+        return min_max_scaler.fit_transform(self.df_data[X])
+
+    #本函数处理zscore 归一化变换
+    def T_zscore(self,X):
+        return preprocessing.scale(self.df_data[X])
+
+    #本函数处理去极值
+    def T_winsorize(s, std, have_negative=True):
+        '''
+        s为series化的数据
+        factor为strings的因子
+        std为几倍的标准查
+        输出Series
+        '''
+        r = s.copy()
+        if have_negative == False:
+            r = r[r >= 0]
+        else:
+            pass
+        # 取极值
+        edge_up = r.mean() + std * r.std()
+        edge_low = r.mean() - std * r.std()
+        r[r > edge_up] = edge_up
+        r[r < edge_low] = edge_low
+        return r
+
+    def T_logistic1(self,X):
+        pass
+
+    def T_logistic2(self,X):
+        pass
+
+    def T_centralize(self,X):
+        pass
+
+    def T_percentile(self,X):
+        pass
+
+    def Frequency(self,X):
+        pass
+
+    def T_WOE(self,X, Y):
+        pass
+
+    def AR(self,X,Y):
+        pass
+
+    def compute_ks(self,X,Y):
+        pass
+
+    def compute_ar(self,X,Y):
+        pass
+
+    def draw_ar(self,X,Y):
+        pass
 
 dq = DataQuality()
 dq.load_file("LoanStats_clean.csv")
