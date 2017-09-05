@@ -4,8 +4,10 @@ import numpy as np
 import scipy.stats as st
 import os
 from sklearn import preprocessing
+from sklearn import linear_model
 from sklearn.preprocessing import *
 from sklearn.feature_selection import *
+from minepy import MINE
 
 
 class DataQuality :
@@ -201,6 +203,34 @@ class DataQuality :
             chi_list.append([x1,chi.statistic,chi.pvalue])
         return chi_list
 
+    def F_mic(self,X,Y):
+        #本函数由于不适用PD模型，暂不开发
+        #相关资料可参考http://blog.csdn.net/qtlyx/article/details/50780400
+        pass
+
+    def F_lasso(self,x,y,c=1.0):
+        #输入为单个列名称或list
+        if isinstance(x,str):
+            x_columns = [x]
+        else:
+            x_columns = x
+        #截取选定列的子dataframe,并进行哑变量处理
+        #然后转换成输入向量
+        train_x_df = pd.get_dummies(self.df_data.loc[:,x_columns],drop_first=True)
+        #print(train_x_df.columns)
+        train_x=np.array(train_x_df)
+        train_y=self.df_data[y]
+        #创建LR对象并训练模型
+        clf = linear_model.LogisticRegression(C=c, penalty='l1', tol=1e-4)
+        clf.fit(train_x,train_y)
+        #将结果输出到一个字典类型
+        coefs={}
+        for i in range(len(train_x_df.columns)):
+            #输出系数
+            coefs[train_x_df.columns[i]] = clf.coef_[0][i]
+        #coefs = np.array([train_x_df.columns,clf.coef_.values])
+        return coefs
+
 
 dq = DataQuality()
 dq.load_file("LoanStats_clean.csv")
@@ -211,4 +241,5 @@ dq.load_file("LoanStats_clean.csv")
 #dq.dq_Frequency(["grade","loan_amnt"],"test2.csv")
 
 #TODO s1=np.random.rand(10)
-print(dq.F_chi_square(["grade","term"],"loan_status1"))
+#print(dq.F_chi_square(["grade","term"],"loan_status1"))
+print(dq.F_lasso(["loan_amnt","term"],"loan_status1"))
